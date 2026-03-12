@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capital City Game</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .game-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 520px;
+            width: 100%;
+            padding: 40px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 28px;
+        }
+
+        /* ── Difficulty Cards ── */
+        .difficulty-selection {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .difficulty-btn {
+            padding: 16px 25px;
+            font-size: 17px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .difficulty-btn .badge {
+            font-size: 12px;
+            background: rgba(255,255,255,0.3);
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
+        .easy   { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); color: white; }
+        .medium { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); color: white; }
+        .hard   { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); color: white; }
+
+        .difficulty-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.2);
+        }
+
+        /* ── Game Area ── */
+        .game-area { display: none; animation: fadeIn 0.5s ease; }
+
+        .score-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 17px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .difficulty-tag {
+            font-size: 11px;
+            background: rgba(255,255,255,0.25);
+            padding: 2px 10px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 5px;
+        }
+
+        .question-container {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 16px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+
+        .question {
+            font-size: 19px;
+            color: #555;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .country-name {
+            color: #667eea;
+            font-weight: 800;
+            font-size: 26px;
+            display: block;
+            margin-bottom: 18px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 13px 14px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 13px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            width: 100%;
+            letter-spacing: 0.5px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(102,126,234,0.45);
+        }
+
+        .feedback {
+            padding: 14px;
+            border-radius: 10px;
+            margin-top: 14px;
+            font-weight: 600;
+            text-align: center;
+            animation: slideIn 0.3s ease;
+            font-size: 15px;
+        }
+
+        .correct   { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .incorrect { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        /* ── Game Over ── */
+        .game-over { text-align: center; animation: fadeIn 0.5s ease; }
+
+        .final-score {
+            font-size: 64px;
+            font-weight: 800;
+            margin: 16px 0 6px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .max-score { color: #aaa; font-size: 14px; margin-bottom: 10px; }
+
+        .rating {
+            font-size: 28px;
+            margin-bottom: 18px;
+        }
+
+        .play-again-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 40px;
+            border: none;
+            border-radius: 10px;
+            font-size: 17px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 700;
+            margin-top: 16px;
+        }
+
+        .play-again-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(102,126,234,0.45);
+        }
+
+        /* ── Info Box ── */
+        .info-box {
+            background: linear-gradient(135deg,#f0f4ff,#f8f0ff);
+            border: 1px solid #dde3ff;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 24px;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .info-box strong { color: #667eea; }
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <h1>🌍 Capital City Game</h1>
+    <p class="subtitle">Test your world capitals knowledge!</p>
+
+    <!-- MENU -->
+    <div id="menu-screen">
+        <div class="info-box">
+            <strong>🟢 Easy</strong> — Major world powers · 1 pt each<br>
+            <strong>🟡 Medium</strong> — Regional capitals · 2 pts each<br>
+            <strong>🔴 Hard</strong> — Obscure &amp; rare nations · 3 pts each<br>
+            <br>Each round: <strong>10 random questions</strong> from the pool.
+        </div>
+
+        <div class="difficulty-selection">
+            <button class="difficulty-btn easy"   onclick="startGame('easy')">
+                🟢 Easy
+                <span class="badge">15 countries · 1 pt</span>
+            </button>
+            <button class="difficulty-btn medium" onclick="startGame('medium')">
+                🟡 Medium
+                <span class="badge">84 countries · 2 pts</span>
+            </button>
+            <button class="difficulty-btn hard"   onclick="startGame('hard')">
+                🔴 Hard
+                <span class="badge">75 countries · 3 pts</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- GAME -->
+    <div id="game-screen" class="game-area">
+        <div class="score-display">
+            <span>Score: <strong id="score">0</strong></span>
+            <span class="difficulty-tag" id="diff-tag"></span>
+            <span>Q <strong id="question-number">1</strong> / <strong id="total-q">10</strong></span>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+
+        <div class="question-container">
+            <div class="question">What is the capital of</div>
+            <span class="country-name" id="country-name"></span>
+            <input type="text" id="answer-input" placeholder="Type capital city…"
+                   onkeypress="if(event.key==='Enter') submitAnswer()">
+            <button class="submit-btn" onclick="submitAnswer()">Submit Answer ↵</button>
+            <div id="feedback"></div>
+        </div>
+    </div>
+
+    <!-- GAME OVER -->
+    <div id="game-over-screen" class="game-area game-over">
+        <h2>🎯 Round Complete!</h2>
+        <div class="final-score" id="final-score">0</div>
+        <div class="max-score" id="max-score-label"></div>
+        <div class="rating" id="rating-emoji"></div>
+        <p id="rating-text" style="color:#666;font-size:15px;"></p>
+        <button class="play-again-btn" onclick="resetGame()">🔄 Play Again</button>
+    </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  COMPLETE MERGED GAME DATA
+// ══════════════════════════════════════════════════
+const gameData = {
+
+    // ── EASY: Major world powers (15) ──────────────
+    easy: {
+        "United States":  "Washington D.C.",
+        "United Kingdom": "London",
+        "France":         "Paris",
+        "Germany":        "Berlin",
+        "Italy":          "Rome",
+        "Spain":          "Madrid",
+        "Canada":         "Ottawa",
+        "Australia":      "Canberra",
+        "Japan":          "Tokyo",
+        "China":          "Beijing",
+        "Russia":         "Moscow",
+        "Brazil":         "Brasilia",
+        "Mexico":         "Mexico City",
+        "India":          "New Delhi",
+        "South Korea":    "Seoul"
+    },
+
+    // ── MEDIUM: Regional / mid-difficulty (84) ─────
+    medium: {
+        // Original medium
+        "Netherlands":   "Amsterdam",
+        "Belgium":       "Brussels",
+        "Switzerland":   "Bern",
+        "Austria":       "Vienna",
+        "Portugal":      "Lisbon",
+        "Greece":        "Athens",
+        "Poland":        "Warsaw",
+        "Norway":        "Oslo",
+        "Sweden":        "Stockholm",
+        "Denmark":       "Copenhagen",
+        "Finland":       "Helsinki",
+        "Turkey":        "Ankara",
+        "Egypt":         "Cairo",
+        "South Africa":  "Pretoria",
+        "Argentina":     "Buenos Aires",
+        // From text file 1
+        "Albania":                  "Tirana",
+        "Algeria":                  "Algiers",
+        "Angola":                   "Luanda",
+        "Armenia":                  "Yerevan",
+        "Azerbaijan":               "Baku",
+        "Bahrain":                  "Manama",
+        "Belarus":                  "Minsk",
+        "Belize":                   "Belmopan",
+        "Benin":                    "Porto-Novo",
+        "Bhutan":                   "Thimphu",
+        "Bolivia":                  "Sucre",
+        "Bosnia and Herzegovina":   "Sarajevo",
+        "Botswana":                 "Gaborone",
+        "Bulgaria":                 "Sofia",
+        "Burkina Faso":             "Ouagadougou",
+        "Cambodia":                 "Phnom Penh",
+        "Cameroon":                 "Yaoundé",
+        "Costa Rica":               "San José",
+        "Croatia":                  "Zagreb",
+        "Cuba":                     "Havana",
+        "Cyprus":                   "Nicosia",
+        "Czech Republic":           "Prague",
+        "Dominican Republic":       "Santo Domingo",
+        "Ecuador":                  "Quito",
+        "El Salvador":              "San Salvador",
+        "Estonia":                  "Tallinn",
+        "Ethiopia":                 "Addis Ababa",
+        "Fiji":                     "Suva",
+        "Georgia":                  "Tbilisi",
+        "Ghana":                    "Accra",
+        "Guatemala":                "Guatemala City",
+        "Haiti":                    "Port-au-Prince",
+        "Honduras":                 "Tegucigalpa",
+        "Jamaica":                  "Kingston",
+        "Jordan":                   "Amman",
+        "Kazakhstan":               "Nur-Sultan",
+        "Kuwait":                   "Kuwait City",
+        "Kyrgyzstan":               "Bishkek",
+        "Laos":                     "Vientiane",
+        "Latvia":                   "Riga",
+        "Lebanon":                  "Beirut",
+        "Libya":                    "Tripoli",
+        "Lithuania":                "Vilnius",
+        "Luxembourg":               "Luxembourg City",
+        "Malawi":                   "Lilongwe",
+        "Maldives":                 "Malé",
+        "Mali":                     "Bamako",
+        "Malta":                    "Valletta",
+        "Moldova":                  "Chișinău",
+        "Mongolia":                 "Ulaanbaatar",
+        "Myanmar":                  "Naypyidaw",
+        "Namibia":                  "Windhoek",
+        "Nicaragua":                "Managua",
+        "North Macedonia":          "Skopje",
+        "Oman":                     "Muscat",
+        "Panama":                   "Panama City",
+        "Paraguay":                 "Asunción",
+        "Romania":                  "Bucharest",
+        "Rwanda":                   "Kigali",
+        "Senegal":                  "Dakar",
+        "Serbia":                   "Belgrade",
+        "Slovakia":                 "Bratislava",
+        "Slovenia":                 "Ljubljana",
+        "Sudan":                    "Khartoum",
+        "Tanzania":                 "Dodoma",
+        "Tunisia":                  "Tunis",
+        "Uganda":                   "Kampala",
+        "Uruguay":                  "Montevideo",
+        "Zambia":                   "Lusaka",
+        // Remaining from original hard that fit medium tier
+        "Bangladesh":               "Dhaka",
+        "Sri Lanka":                "Sri Jayawardenepura Kotte",
+        "Uzbekistan":               "Tashkent",
+        "Tajikistan":               "Dushanbe",
+        "Turkmenistan":             "Ashgabat"
+    },
+
+    // ── HARD: Obscure / small nations (75) ─────────
+    hard: {
+        // From text file 2 (rare nations)
+        "Andorra":                          "Andorra la Vella",
+        "Antigua and Barbuda":              "St. John's",
+        "Bahamas":                          "Nassau",
+        "Barbados":                         "Bridgetown",
+        "Brunei":                           "Bandar Seri Begawan",
+        "Burundi":                          "Gitega",
+        "Cape Verde":                       "Praia",
+        "Central African Republic":         "Bangui",
+        "Chad":                             "N'Djamena",
+        "Comoros":                          "Moroni",
+        "Congo (Republic of the)":          "Brazzaville",
+        "Congo (Democratic Republic)":      "Kinshasa",
+        "Djibouti":                         "Djibouti",
+        "Dominica":                         "Roseau",
+        "Equatorial Guinea":                "Malabo",
+        "Eritrea":                          "Asmara",
+        "Eswatini":                         "Mbabane",
+        "Gabon":                            "Libreville",
+        "Gambia":                           "Banjul",
+        "Grenada":                          "St. George's",
+        "Guinea":                           "Conakry",
+        "Guinea-Bissau":                    "Bissau",
+        "Guyana":                           "Georgetown",
+        "Kiribati":                         "Tarawa",
+        "Lesotho":                          "Maseru",
+        "Liberia":                          "Monrovia",
+        "Liechtenstein":                    "Vaduz",
+        "Madagascar":                       "Antananarivo",
+        "Marshall Islands":                 "Majuro",
+        "Mauritania":                       "Nouakchott",
+        "Mauritius":                        "Port Louis",
+        "Micronesia":                       "Palikir",
+        "Monaco":                           "Monaco",
+        "Mozambique":                       "Maputo",
+        "Nauru":                            "Yaren District",
+        "Niger":                            "Niamey",
+        "Palau":                            "Ngerulmud",
+        "Papua New Guinea":                 "Port Moresby",
+        "Saint Kitts and Nevis":            "Basseterre",
+        "Saint Lucia":                      "Castries",
+        "Saint Vincent and the Grenadines": "Kingstown",
+        "Samoa":                            "Apia",
+        "San Marino":                       "San Marino",
+        "São Tomé and Príncipe":            "São Tomé",
+        "Seychelles":                       "Victoria",
+        "Sierra Leone":                     "Freetown",
+        "Solomon Islands":                  "Honiara",
+        "Somalia":                          "Mogadishu",
+        "South Sudan":                      "Juba",
+        "Suriname":                         "Paramaribo",
+        "Timor-Leste":                      "Dili",
+        "Togo":                             "Lomé",
+        "Tonga":                            "Nukuʻalofa",
+        "Trinidad and Tobago":              "Port of Spain",
+        "Tuvalu":                           "Funafuti",
+        "Vanuatu":                          "Port Vila",
+        "Vatican City":                     "Vatican City",
+        "Yemen":                            "Sana'a",
+        // Plus original hard entries not absorbed into medium
+        "Mongolia (Hard)":                  "Ulaanbaatar",  // duplicate handled via key rename
+        "Bhutan (Hard)":                    "Thimphu",
+        "Kyrgyzstan":                       "Bishkek",
+        "Myanmar (Hard)":                   "Naypyidaw",
+        "Laos (Hard)":                      "Vientiane",
+        "Cambodia (Hard)":                  "Phnom Penh",
+        "Moldova (Hard)":                   "Chisinau",
+        "Albania (Hard)":                   "Tirana",
+        "North Macedonia":                  "Skopje",
+        "Kazakhstan (Astana)":              "Astana",
+        // Extra well-known hard capitals
+        "Iraq":                             "Baghdad",
+        "Iran":                             "Tehran",
+        "Afghanistan":                      "Kabul",
+        "Nepal":                            "Kathmandu",
+        "Pakistan":                         "Islamabad",
+        "Venezuela":                        "Caracas",
+        "Colombia":                         "Bogotá",
+        "Chile":                            "Santiago",
+        "Peru":                             "Lima"
+    }
+};
+
+// ══════════════════════════════════════════════════
+//  Clean up hard data: remove duplicate-key hacks,
+//  use a flat merged object built at runtime instead.
+// ══════════════════════════════════════════════════
+(function cleanHard() {
+    const keysToRemove = Object.keys(gameData.hard).filter(k =>
+        k.endsWith(')') && (k.includes('Hard') || k.includes('Astana'))
+    );
+    keysToRemove.forEach(k => delete gameData.hard[k]);
+
+    // Add clean deduplicated originals back if not already present
+    const extras = {
+        "Mongolia":      "Ulaanbaatar",
+        "Bhutan":        "Thimphu",
+        "Myanmar":       "Naypyidaw",
+        "Laos":          "Vientiane",
+        "Cambodia":      "Phnom Penh",
+        "Moldova":       "Chisinau",
+        "Albania":       "Tirana",
+        "Kyrgyzstan":    "Bishkek",
+        "North Macedonia": "Skopje",
+        "Kazakhstan":    "Astana"
+    };
+    Object.entries(extras).forEach(([k,v]) => {
+        if (!gameData.hard[k]) gameData.hard[k] = v;
+    });
+})();
+
+// ══════════════════════════════════════════════════
+//  GAME STATE
+// ══════════════════════════════════════════════════
+const QUESTIONS_PER_ROUND = 10;
+
+let currentGame = {
+    difficulty: '',
+    questions: [],
+    currentQuestionIndex: 0,
+    score: 0,
+    pointsPerCorrect: 1
+};
+
+// ── Start Game ──────────────────────────────────
+function startGame(difficulty) {
+    currentGame.difficulty = difficulty;
+    currentGame.score = 0;
+    currentGame.currentQuestionIndex = 0;
+    currentGame.pointsPerCorrect = difficulty === 'easy' ? 1 : difficulty === 'medium' ? 2 : 3;
+
+    const countries = Object.keys(gameData[difficulty]);
+    currentGame.questions = shuffleArray(countries).slice(0, QUESTIONS_PER_ROUND);
+
+    document.getElementById('menu-screen').style.display      = 'none';
+    document.getElementById('game-screen').style.display      = 'block';
+    document.getElementById('game-over-screen').style.display = 'none';
+    document.getElementById('diff-tag').textContent = difficulty.toUpperCase();
+    document.getElementById('total-q').textContent  = QUESTIONS_PER_ROUND;
+
+    showQuestion();
+}
+
+// ── Show Question ───────────────────────────────
+function showQuestion() {
+    if (currentGame.currentQuestionIndex >= QUESTIONS_PER_ROUND) {
+        endGame(); return;
+    }
+
+    const country = currentGame.questions[currentGame.currentQuestionIndex];
+    document.getElementById('country-name').textContent    = country;
+    document.getElementById('answer-input').value          = '';
+    document.getElementById('feedback').innerHTML          = '';
+    document.getElementById('score').textContent           = currentGame.score;
+    document.getElementById('question-number').textContent = currentGame.currentQuestionIndex + 1;
+
+    const pct = (currentGame.currentQuestionIndex / QUESTIONS_PER_ROUND) * 100;
+    document.getElementById('progress').style.width = pct + '%';
+
+    document.getElementById('answer-input').focus();
+}
+
+// ── Submit Answer ───────────────────────────────
+function submitAnswer() {
+    const input       = document.getElementById('answer-input');
+    const userAnswer  = input.value.trim();
+    if (!userAnswer) return;
+
+    const country       = currentGame.questions[currentGame.currentQuestionIndex];
+    const correctAnswer = gameData[currentGame.difficulty][country];
+    const feedbackDiv   = document.getElementById('feedback');
+
+    if (isCorrect(userAnswer, correctAnswer)) {
+        currentGame.score += currentGame.pointsPerCorrect;
+        feedbackDiv.innerHTML = `<div class="feedback correct">✅ Correct! +${currentGame.pointsPerCorrect} point${currentGame.pointsPerCorrect > 1 ? 's' : ''}!</div>`;
+    } else {
+        feedbackDiv.innerHTML = `<div class="feedback incorrect">❌ The answer was: <strong>${correctAnswer}</strong></div>`;
+    }
+
+    currentGame.currentQuestionIndex++;
+    setTimeout(showQuestion, 2000);
+}
+
+// ── Answer Matching ─────────────────────────────
+function isCorrect(userAnswer, correctAnswer) {
+    const clean = s => s.normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')  // strip diacritics
+                        .replace(/[^a-zA-Z]/g, '')
+                        .toLowerCase();
+    return clean(userAnswer) === clean(correctAnswer);
+}
+
+// ── End Game ────────────────────────────────────
+function endGame() {
+    const maxScore = QUESTIONS_PER_ROUND * currentGame.pointsPerCorrect;
+    const pct      = currentGame.score / maxScore;
+
+    let emoji, text;
+    if      (pct === 1)   { emoji = '🏆'; text = 'Perfect score! You\'re a geography genius!'; }
+    else if (pct >= 0.8)  { emoji = '🌟'; text = 'Excellent! Almost perfect!'; }
+    else if (pct >= 0.6)  { emoji = '👍'; text = 'Good job! Keep practising!'; }
+    else if (pct >= 0.4)  { emoji = '📚'; text = 'Not bad — study a few more capitals!'; }
+    else                  { emoji = '🗺️'; text = 'Keep exploring the world!'; }
+
+    document.getElementById('game-screen').style.display      = 'none';
+    document.getElementById('game-over-screen').style.display = 'block';
+    document.getElementById('final-score').textContent        = currentGame.score;
+    document.getElementById('max-score-label').textContent    = `out of ${maxScore} possible points`;
+    document.getElementById('rating-emoji').textContent       = emoji;
+    document.getElementById('rating-text').textContent        = text;
+    document.getElementById('progress').style.width           = '100%';
+}
+
+// ── Reset ────────────────────────────────────────
+function resetGame() {
+    document.getElementById('menu-screen').style.display      = 'block';
+    document.getElementById('game-screen').style.display      = 'none';
+    document.getElementById('game-over-screen').style.display = 'none';
+    document.getElementById('progress').style.width           = '0%';
+}
+
+// ── Fisher-Yates Shuffle ─────────────────────────
+function shuffleArray(array) {
+    const a = [...array];
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+}
+</script>
+</body>
+</html>
